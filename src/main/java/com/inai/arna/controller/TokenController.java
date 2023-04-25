@@ -1,6 +1,6 @@
 package com.inai.arna.controller;
 
-import com.inai.arna.dto.TokenResponse;
+import com.inai.arna.dto.response.TokenResponse;
 import com.inai.arna.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

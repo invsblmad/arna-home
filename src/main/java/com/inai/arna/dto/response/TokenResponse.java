@@ -1,4 +1,4 @@
-package com.inai.arna.dto;
+package com.inai.arna.dto.response;
 
 public record TokenResponse(
         String accessToken,

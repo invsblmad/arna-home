@@ -1,4 +1,4 @@
-package com.inai.arna.dto;
+package com.inai.arna.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

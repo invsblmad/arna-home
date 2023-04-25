@@ -1,8 +1,8 @@
 package com.inai.arna.service.impl;
 
-import com.inai.arna.dto.AuthenticationRequest;
-import com.inai.arna.dto.RegistrationRequest;
-import com.inai.arna.dto.TokenResponse;
+import com.inai.arna.dto.request.AuthenticationRequest;
+import com.inai.arna.dto.request.RegistrationRequest;
+import com.inai.arna.dto.response.TokenResponse;
 import com.inai.arna.exception.PasswordNotConfirmedException;
 import com.inai.arna.exception.UserAlreadyExistsException;
 import com.inai.arna.mapper.UserMapper;

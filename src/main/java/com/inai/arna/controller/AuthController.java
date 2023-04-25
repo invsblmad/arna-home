@@ -1,8 +1,8 @@
 package com.inai.arna.controller;
 
-import com.inai.arna.dto.AuthenticationRequest;
-import com.inai.arna.dto.RegistrationRequest;
-import com.inai.arna.dto.TokenResponse;
+import com.inai.arna.dto.request.AuthenticationRequest;
+import com.inai.arna.dto.request.RegistrationRequest;
+import com.inai.arna.dto.response.TokenResponse;
 import com.inai.arna.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

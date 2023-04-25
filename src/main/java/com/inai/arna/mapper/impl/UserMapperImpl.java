@@ -1,6 +1,6 @@
 package com.inai.arna.mapper.impl;
 
-import com.inai.arna.dto.RegistrationRequest;
+import com.inai.arna.dto.request.RegistrationRequest;
 import com.inai.arna.mapper.UserMapper;
 import com.inai.arna.model.user.Role;
 import com.inai.arna.model.user.User;
