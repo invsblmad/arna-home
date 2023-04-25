@@ -10,12 +10,13 @@ import java.util.List;
 @Table(name = "categories")
 @Data
 @NoArgsConstructor
+@NamedEntityGraph(name = "Category.subCategories", attributeNodes = @NamedAttributeNode("subCategories"))
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @OneToMany(mappedBy = "parentCategory", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "parentCategory")
     private List<Category> subCategories;
     @ManyToOne
     @JoinColumn(name = "parent_category_id")
