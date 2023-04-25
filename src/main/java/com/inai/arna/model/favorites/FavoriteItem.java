@@ -8,19 +8,21 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
+
 @Entity
-@Table(name = "favourite_items")
+@Table(name = "favorite_items")
 @Data
 @NoArgsConstructor
 @IdClass(FavoriteItemId.class)
-public class FavoriteItem {
+public class FavoriteItem implements Serializable {
     @Id
     @Column(name = "user_id")
     private Integer userId;
 
     @Id
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @Column(name = "news_id")
+    @Column(name = "item_id")
     private Integer itemId;
 
     @ManyToOne
@@ -29,6 +31,6 @@ public class FavoriteItem {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "news_id", insertable = false, updatable = false)
+    @JoinColumn(name = "item_id", insertable = false, updatable = false)
     private Item item;
 }
