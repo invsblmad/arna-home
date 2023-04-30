@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CategoryService {
     List<RoomView> getAll();
-    ItemCategory findItemCategory(int roomId, int categoryId);
+    ItemCategory findItemCategory(Integer roomId, Integer categoryId);
 }

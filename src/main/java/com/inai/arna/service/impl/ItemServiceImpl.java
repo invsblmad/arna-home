@@ -19,7 +19,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
 
     @Override
-    public Page<ItemView> getAll(Pageable pageable, int roomId, int categoryId) {
+    public Page<ItemView> getAll(Pageable pageable, Integer roomId, Integer categoryId) {
         ItemCategory category = categoryService.findItemCategory(roomId, categoryId);
         Integer userId = userService.getAuthenticatedUserId();
         return itemRepository.findAllByCategory(pageable, category.getId(), userId);

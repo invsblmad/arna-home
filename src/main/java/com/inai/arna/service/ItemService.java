@@ -5,6 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ItemService {
-    Page<ItemView> getAll(Pageable pageable, int roomId, int categoryId);
+    Page<ItemView> getAll(Pageable pageable, Integer roomId, Integer categoryId);
 
 }

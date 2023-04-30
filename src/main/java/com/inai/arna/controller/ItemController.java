@@ -17,9 +17,8 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{room-id}/{category-id}")
-    public Page<ItemView> getAll(Pageable pageable,
-                                 @PathVariable("room-id") int roomId,
-                                 @PathVariable("category-id") int categoryId
+    public Page<ItemView> getAll(Pageable pageable, @PathVariable("room-id") Integer roomId,
+                                 @PathVariable("category-id") Integer categoryId
     ) {
         return itemService.getAll(pageable, roomId, categoryId);
     }
