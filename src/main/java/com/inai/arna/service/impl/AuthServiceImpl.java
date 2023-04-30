@@ -16,8 +16,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final UserDetailsService userDetailsService;
 
     @Override
     public TokenResponse login(AuthenticationRequest authenticationRequest) {
@@ -53,8 +53,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public User getAuthenticatedUser() {
-        return tokenService.getUserDetailsFromToken().user();
+    public Optional<User> getAuthenticatedUser() {
+        var userDetails = tokenService.getUserDetailsFromToken();
+        if (userDetails != null)
+            return Optional.of(userDetails.user());
+        return Optional.empty();
     }
 
     private void validateEmail(String email) {

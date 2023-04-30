@@ -39,9 +39,13 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public UserDetailsImpl getUserDetailsFromToken() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt token = (Jwt) authentication.getPrincipal();
-        return (UserDetailsImpl) userDetailsService.loadUserByUsername(token.getSubject());
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.getPrincipal() instanceof Jwt token) {
+            String username = token.getSubject();
+            return (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+        }
+        return null;
     }
 
     private String generateToken(UserDetailsImpl userDetails, int expirationPeriod) {
