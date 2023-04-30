@@ -1,5 +1,6 @@
 package com.inai.arna.controller;
 
+import com.inai.arna.dto.response.ItemDetailsView;
 import com.inai.arna.dto.response.ItemView;
 import com.inai.arna.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,15 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{room-id}/{category-id}")
-    public Page<ItemView> getAll(Pageable pageable, @PathVariable("room-id") Integer roomId,
-                                 @PathVariable("category-id") Integer categoryId
+    public Page<ItemView> getAll(@PathVariable("room-id") Integer roomId,
+                                 @PathVariable("category-id") Integer categoryId,
+                                 Pageable pageable
     ) {
-        return itemService.getAll(pageable, roomId, categoryId);
+        return itemService.getAll(roomId, categoryId, pageable);
+    }
+
+    @GetMapping("/{id}")
+    public ItemDetailsView getById(@PathVariable Integer id) {
+        return itemService.getById(id);
     }
 }

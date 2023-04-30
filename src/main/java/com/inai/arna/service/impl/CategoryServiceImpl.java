@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ItemCategory findItemCategory(Integer roomId, Integer categoryId) {
-        return itemCategoryRepository.findByCategory_IdAndRoom_Id(categoryId, roomId).orElseThrow(
+        return itemCategoryRepository.findByRoom_IdAndCategory_Id(roomId, categoryId).orElseThrow(
                 () -> new EntityNotFoundException("Item category is not found: wrong room id or category id")
         );
     }

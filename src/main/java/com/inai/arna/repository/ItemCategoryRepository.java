@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ItemCategoryRepository extends JpaRepository<ItemCategory, Integer> {
-    Optional<ItemCategory> findByCategory_IdAndRoom_Id(Integer categoryId, Integer roomId);
+    Optional<ItemCategory> findByRoom_IdAndCategory_Id(Integer roomId, Integer categoryId);
 }
