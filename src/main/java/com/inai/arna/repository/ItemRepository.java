@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-    @Query(value = "select i.id, i.name, i.price, i.rating, fi.item_id is not null as isLiked, im.path as image " +
+    @Query(value = "select i.id, i.name, i.price, i.rating, fi.item_id is not null as isLiked, im.url as imageUrl " +
             "from items i left join favorite_items fi on (:userId is not null or fi.user_id = :userId) " +
             "and fi.item_id = i.id left join images im on (im.item_id = i.id and im.is_default is true) " +
             "where i.category_id = :categoryId", nativeQuery = true)

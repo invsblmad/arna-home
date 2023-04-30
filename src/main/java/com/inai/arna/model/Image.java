@@ -12,7 +12,7 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String path;
+    private String url;
     private String colorHex;
     @Column(name = "is_default")
     private boolean isDefault;
