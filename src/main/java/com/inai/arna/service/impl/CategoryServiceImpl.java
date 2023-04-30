@@ -1,7 +1,10 @@
 package com.inai.arna.service.impl;
 
-import com.inai.arna.dto.response.CategoryView;
-import com.inai.arna.repository.CategoryRepository;
+import com.inai.arna.dto.response.RoomView;
+import com.inai.arna.exception.EntityNotFoundException;
+import com.inai.arna.model.category.ItemCategory;
+import com.inai.arna.repository.ItemCategoryRepository;
+import com.inai.arna.repository.RoomRepository;
 import com.inai.arna.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,10 +14,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-    private final CategoryRepository categoryRepository;
+    private final RoomRepository roomRepository;
+    private final ItemCategoryRepository itemCategoryRepository;
 
     @Override
-    public List<CategoryView> getAll() {
-        return categoryRepository.findAllBy();
+    public List<RoomView> getAll() {
+        return roomRepository.findAllBy();
+    }
+
+    @Override
+    public ItemCategory findItemCategory(int roomId, int categoryId) {
+        return itemCategoryRepository.findByCategory_IdAndRoom_Id(categoryId, roomId).orElseThrow(
+                () -> new EntityNotFoundException("Item category is not found: wrong room id or category id")
+        );
     }
 }

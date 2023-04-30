@@ -1,6 +1,6 @@
 package com.inai.arna.controller;
 
-import com.inai.arna.dto.response.CategoryView;
+import com.inai.arna.dto.response.RoomView;
 import com.inai.arna.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
     @GetMapping
-    public List<CategoryView> getAll() {
+    public List<RoomView> getAll() {
         return categoryService.getAll();
     }
 }
