@@ -19,7 +19,7 @@ public class Review {
     @Column(columnDefinition = "text")
     private String text;
     private BigDecimal mark;
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP(0) WITHOUT TIME ZONE")
     private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

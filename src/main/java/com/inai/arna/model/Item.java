@@ -25,7 +25,7 @@ public class Item {
     private int amountInStock;
     @Column(name = "number_of_purchases")
     private int numberOfPurchases;
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP(0) WITHOUT TIME ZONE")
     private LocalDateTime createdAt;
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
