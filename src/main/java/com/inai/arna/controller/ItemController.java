@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ItemController {
     private final ItemService itemService;
 
-    @GetMapping("/{category-id}")
-    public Page<ItemView> getAll(Pageable pageable, @PathVariable("category-id") int categoryId) {
-        return null;
+    @GetMapping("/{room-id}/{category-id}")
+    public Page<ItemView> getAll(Pageable pageable,
+                                 @PathVariable("room-id") int roomId,
+                                 @PathVariable("category-id") int categoryId
+    ) {
+        return itemService.getAll(pageable, roomId, categoryId);
     }
 }

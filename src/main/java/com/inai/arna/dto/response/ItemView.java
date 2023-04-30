@@ -7,6 +7,6 @@ public interface ItemView {
     String getName();
     BigDecimal getPrice();
     BigDecimal getRating();
-    boolean isLiked();
+    boolean getIsLiked();
     String getImage();
 }
