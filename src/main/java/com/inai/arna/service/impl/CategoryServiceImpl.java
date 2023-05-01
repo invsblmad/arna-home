@@ -1,7 +1,7 @@
 package com.inai.arna.service.impl;
 
 import com.inai.arna.dto.response.RoomView;
-import com.inai.arna.exception.EntityNotFoundException;
+import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.category.ItemCategory;
 import com.inai.arna.repository.ItemCategoryRepository;
 import com.inai.arna.repository.RoomRepository;
@@ -25,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ItemCategory findItemCategory(Integer roomId, Integer categoryId) {
         return itemCategoryRepository.findByRoom_IdAndCategory_Id(roomId, categoryId).orElseThrow(
-                () -> new EntityNotFoundException("Item category is not found: wrong room id or category id")
+                () -> new NotFoundException("Item category is not found: wrong room id or category id")
         );
     }
 }
