@@ -1,6 +1,6 @@
 package com.inai.arna.exception.hadler;
 
-import com.inai.arna.exception.EntityNotFoundException;
+import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.exception.PasswordNotConfirmedException;
 import com.inai.arna.exception.UserAlreadyExistsException;
 import com.inai.arna.exception.response.ErrorResponse;
@@ -49,8 +49,8 @@ public class CustomExceptionHandler {
                         new ValidationErrorResponse("Validation error", errors));
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handle(EntityNotFoundException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(NotFoundException e) {
         return ResponseEntity
                 .status(NOT_FOUND)
                 .body(new ErrorResponse(e.getMessage()));
