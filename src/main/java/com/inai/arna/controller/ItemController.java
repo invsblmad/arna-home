@@ -1,6 +1,6 @@
 package com.inai.arna.controller;
 
-import com.inai.arna.dto.response.ItemDetailsView;
+import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemView;
 import com.inai.arna.service.ItemService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,9 @@ public class ItemController {
         return itemService.getAll(roomId, categoryId, pageable);
     }
 
-    @GetMapping("/{id}")
-    public ItemDetailsView getById(@PathVariable Integer id) {
-        return itemService.getById(id);
+    @GetMapping("/{item-id}")
+    public ItemDetailsResponse getById(@PathVariable("item-id") Integer itemId) {
+        return itemService.getById(itemId);
     }
+
 }

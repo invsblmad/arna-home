@@ -1,15 +1,16 @@
 package com.inai.arna.service.impl;
 
+import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemDetailsView;
 import com.inai.arna.dto.response.ItemView;
+import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.Item;
 import com.inai.arna.model.category.ItemCategory;
 import com.inai.arna.repository.ItemRepository;
-import com.inai.arna.repository.ReviewRepository;
 import com.inai.arna.service.CategoryService;
 import com.inai.arna.service.ItemService;
+import com.inai.arna.service.ReviewService;
 import com.inai.arna.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +20,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final ReviewRepository reviewRepository;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final ReviewService reviewService;
 
     @Override
     public Page<ItemView> getAll(Integer roomId, Integer categoryId, Pageable pageable) {
@@ -31,13 +32,19 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDetailsView getById(Integer id) {
-        return itemRepository.findById(id, userService.getAuthenticatedUserId());
+    public ItemDetailsResponse getById(Integer itemId) {
+        Item item = findItemById(itemId);
+        Integer userId = userService.getAuthenticatedUserId();
+
+        ItemDetailsView details = itemRepository.findById(itemId, userId);
+        int numberOfReviews = reviewService.getNumberOfReviews(item);
+
+        return new ItemDetailsResponse(details, numberOfReviews);
     }
 
-    public Item findItemById(Integer id) {
+    private Item findItemById(Integer id) {
         return itemRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Item with id " + id + " is not found")
+                () -> new NotFoundException("Item with id " + id + " is not found")
         );
     }
 
