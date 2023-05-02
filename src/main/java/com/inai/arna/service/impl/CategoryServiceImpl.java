@@ -22,8 +22,7 @@ public class CategoryServiceImpl implements CategoryService {
         return roomRepository.findAllBy();
     }
 
-    @Override
-    public ItemCategory findItemCategory(Integer roomId, Integer categoryId) {
+    protected ItemCategory findItemCategory(Integer roomId, Integer categoryId) {
         return itemCategoryRepository.findByRoom_IdAndCategory_Id(roomId, categoryId).orElseThrow(
                 () -> new NotFoundException("Item category is not found: wrong room id or category id")
         );

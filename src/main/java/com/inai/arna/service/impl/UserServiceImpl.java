@@ -1,5 +1,6 @@
 package com.inai.arna.service.impl;
 
+import com.inai.arna.model.user.User;
 import com.inai.arna.service.AuthService;
 import com.inai.arna.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +13,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Integer getAuthenticatedUserId() {
-        var user = authService.getAuthenticatedUser();
-        if (user.isPresent())
-            return user.get().getId();
+        User user = authService.getAuthenticatedUser();
+        if (user != null)
+            return user.getId();
         return null;
     }
 }

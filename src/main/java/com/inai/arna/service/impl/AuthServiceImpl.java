@@ -18,8 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -53,11 +51,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Optional<User> getAuthenticatedUser() {
+    public User getAuthenticatedUser() {
         var userDetails = tokenService.getUserDetailsFromToken();
         if (userDetails != null)
-            return Optional.of(userDetails.user());
-        return Optional.empty();
+            return userDetails.user();
+        return null;
     }
 
     private void validateEmail(String email) {
