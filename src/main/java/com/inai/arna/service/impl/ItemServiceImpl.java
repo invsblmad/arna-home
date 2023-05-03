@@ -1,20 +1,20 @@
 package com.inai.arna.service.impl;
 
-import com.inai.arna.dto.request.FilterType;
+import com.inai.arna.dto.request.Filter;
 import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemDetailsView;
-import com.inai.arna.dto.response.ItemView;
+import com.inai.arna.dto.response.ItemResponse;
 import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.Item;
-import com.inai.arna.model.category.ItemCategory;
 import com.inai.arna.repository.ItemRepository;
 import com.inai.arna.service.ItemService;
 import com.inai.arna.service.ReviewService;
 import com.inai.arna.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +25,15 @@ public class ItemServiceImpl implements ItemService {
     private final ReviewService reviewService;
 
     @Override
-    public Page<ItemView> getAll(Integer roomId, Integer categoryId, FilterType filterType,
-                                 String search, Pageable pageable) {
+    public List<ItemResponse> getAll(Integer roomId, Integer categoryId, Filter filter,
+                                     String search, Pageable pageable) {
+        Integer itemCategoryId = null;
 
-        ItemCategory category = categoryService.findItemCategory(roomId, categoryId);
+        if (roomId != null && categoryId != null)
+            itemCategoryId = categoryService.findItemCategory(roomId, categoryId).getId();
+
         Integer userId = userService.getAuthenticatedUserId();
-        return itemRepository.findAll(category.getId(), userId, pageable);
+        return itemRepository.findAll(itemCategoryId, userId, filter, search, pageable);
     }
 
     @Override
