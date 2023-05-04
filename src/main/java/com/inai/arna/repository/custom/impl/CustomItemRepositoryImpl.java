@@ -10,7 +10,10 @@ import com.inai.arna.repository.custom.CustomItemRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jooq.*;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -34,17 +37,28 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         favoriteItems = Tables.FAVORITE_ITEMS;
     }
     @Override
-    public List<ItemResponse> findAll(Integer categoryId, Integer userId, Filter filter, String search, Pageable pageable) {
-        Condition condition = getConditions(categoryId, filter, search);
-        return context.select(getSelectColumns()).from(items)
+    public Page<ItemResponse> findAll(Integer categoryId, Integer userId, Filter filter, String search, Pageable pageable) {
+        var query = context.select(getSelectColumns()).from(items)
                 .leftJoin(favoriteItems).on(
                         userId != null ?
                         favoriteItems.USER_ID.eq(userId).and(favoriteItems.ITEM_ID.eq(items.ID)) :
                         DSL.falseCondition())
                 .join(images).on(
                         images.ITEM_ID.eq(items.ID).and(images.IS_DEFAULT.isTrue()))
-                .where(condition)
-                .fetchInto(ItemResponse.class);
+                .where(getConditions(categoryId, filter, search));
+
+        return getPaginatedResult(query, pageable, ItemResponse.class);
+    }
+
+    private <T> Page<T> getPaginatedResult(SelectConditionStep<Record> query, Pageable pageable, Class<T> aClass) {
+        var paginatedQuery = query
+                .limit(pageable.getPageSize())
+                .offset(pageable.getPageNumber() * pageable.getPageSize());
+
+        List<T> result = paginatedQuery.fetchInto(aClass);
+
+        int totalCount = context.fetchCount(paginatedQuery);
+        return new PageImpl<>(result, pageable, totalCount);
     }
 
     private Condition getConditions(Integer categoryId, Filter filter, String search) {

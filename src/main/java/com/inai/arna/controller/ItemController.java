@@ -5,10 +5,9 @@ import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemResponse;
 import com.inai.arna.service.ItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/public/items")
@@ -17,7 +16,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemResponse> getAll(@RequestParam(value = "room", required = false) Integer roomId,
+    public Page<ItemResponse> getAll(@RequestParam(value = "room", required = false) Integer roomId,
                                      @RequestParam(value = "category", required = false) Integer categoryId,
                                      @RequestParam(required = false) Filter filter,
                                      @RequestParam(required = false) String search,

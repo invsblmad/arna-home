@@ -11,10 +11,9 @@ import com.inai.arna.service.ItemService;
 import com.inai.arna.service.ReviewService;
 import com.inai.arna.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class ItemServiceImpl implements ItemService {
     private final ReviewService reviewService;
 
     @Override
-    public List<ItemResponse> getAll(Integer roomId, Integer categoryId, Filter filter,
+    public Page<ItemResponse> getAll(Integer roomId, Integer categoryId, Filter filter,
                                      String search, Pageable pageable) {
         Integer itemCategoryId = null;
 
