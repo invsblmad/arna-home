@@ -1,7 +1,9 @@
 package com.inai.arna.repository.custom.impl;
 
 import com.inai.arna.dto.request.Filter;
+import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemResponse;
+import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.jooq.model.Tables;
 import com.inai.arna.jooq.model.tables.FavoriteItems;
 import com.inai.arna.jooq.model.tables.Images;
@@ -50,6 +52,61 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         return getPaginatedResult(query, pageable, ItemResponse.class);
     }
 
+    @Override
+    public ItemDetailsResponse findById(Integer itemId, Integer userId) {
+        var query = context.select(getItemDetailsColumns()).from(items)
+                .leftJoin(favoriteItems).on(
+                        userId != null ?
+                        favoriteItems.USER_ID.eq(userId).and(favoriteItems.ITEM_ID.eq(items.ID)) :
+                        DSL.falseCondition())
+                .where(items.ID.eq(itemId));
+
+        Record record = query.fetchOne();
+        if (record == null)
+            throw new NotFoundException("Item with id " + itemId + " is not found");
+        return record.into(ItemDetailsResponse.class);
+    }
+
+    private List<Field<?>> getSelectColumns() {
+        return Arrays.asList(
+                items.ID,
+                items.NAME,
+                items.PRICE,
+                items.RATING,
+                favoriteItems.ITEM_ID.isNotNull().as("isLiked"),
+                images.URL.as("imageUrl")
+        );
+    }
+
+    private Condition getConditions(Integer categoryId, Filter filter, String search) {
+        Condition condition = DSL.trueCondition();
+
+        if (categoryId != null)
+            condition = getByCategory(categoryId);
+        if (filter != null)
+            condition = getByFilter(condition, filter);
+        if (search != null)
+            condition = getBySearch(search);
+
+        return condition;
+    }
+
+    private Condition getByCategory(Integer categoryId) {
+        return DSL.trueCondition().and(items.CATEGORY_ID.eq(categoryId));
+    }
+
+    private Condition getByFilter(Condition previous, Filter filter) {
+        LocalDateTime dateLimit = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
+        return previous.and(filter == Filter.NEW ?
+                            items.CREATED_AT.greaterOrEqual(dateLimit) :
+                            items.NUMBER_OF_PURCHASES.greaterOrEqual(20));
+    }
+
+    private Condition getBySearch(String search) {
+        return DSL.lower(items.NAME).like("%" + search.toLowerCase() + "%")
+                .or(DSL.lower(items.DESCRIPTION).like("%" + search.toLowerCase() + "%"));
+    }
+
     private <T> Page<T> getPaginatedResult(SelectConditionStep<Record> query, Pageable pageable, Class<T> aClass) {
         var paginatedQuery = query
                 .limit(pageable.getPageSize())
@@ -61,35 +118,10 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         return new PageImpl<>(result, pageable, totalCount);
     }
 
-    private Condition getConditions(Integer categoryId, Filter filter, String search) {
-        Condition condition = DSL.trueCondition();
-        if (categoryId != null)
-            condition = condition.and(items.CATEGORY_ID.eq(categoryId));
-
-        if (filter != null)
-            condition = condition.and(filter == Filter.NEW ?
-                    items.CREATED_AT.greaterOrEqual(getDateLimit()) :
-                    items.NUMBER_OF_PURCHASES.greaterOrEqual(20));
-
-        if (search != null) {
-            condition = DSL.lower(items.NAME).like("%" + search.toLowerCase() + "%")
-                    .or(DSL.lower(items.DESCRIPTION).like("%" + search.toLowerCase() + "%"));
-        }
-        return condition;
+    private List<Field<?>> getItemDetailsColumns() {
+        var columns = getSelectColumns();
+        columns.set(columns.size() - 1, items.DESCRIPTION);
+        return columns;
     }
 
-    private LocalDateTime getDateLimit() {
-        return LocalDateTime.now().minus(7, ChronoUnit.DAYS);
-    }
-
-    private List<Field<?>> getSelectColumns() {
-        return Arrays.asList(
-                items.ID,
-                items.NAME,
-                items.PRICE,
-                items.RATING,
-                images.URL.as("imageUrl"),
-                favoriteItems.ITEM_ID.isNotNull().as("isLiked")
-        );
-    }
 }

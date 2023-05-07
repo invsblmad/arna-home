@@ -2,7 +2,6 @@ package com.inai.arna.service.impl;
 
 import com.inai.arna.dto.request.Filter;
 import com.inai.arna.dto.response.ItemDetailsResponse;
-import com.inai.arna.dto.response.ItemDetailsView;
 import com.inai.arna.dto.response.ItemResponse;
 import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.Item;
@@ -40,10 +39,10 @@ public class ItemServiceImpl implements ItemService {
         Item item = findItemById(itemId);
         Integer userId = userService.getAuthenticatedUserId();
 
-        ItemDetailsView details = itemRepository.findById(itemId, userId);
-        int numberOfReviews = reviewService.getNumberOfReviews(item);
+        ItemDetailsResponse details = itemRepository.findById(itemId, userId);
+        details.setNumberOfReviews(reviewService.getNumberOfReviews(item));
 
-        return new ItemDetailsResponse(details, numberOfReviews);
+        return details;
     }
 
     private Item findItemById(Integer id) {
