@@ -7,6 +7,7 @@ import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.jooq.model.Tables;
 import com.inai.arna.jooq.model.tables.FavoriteItems;
 import com.inai.arna.jooq.model.tables.Images;
+import com.inai.arna.jooq.model.tables.ItemCategories;
 import com.inai.arna.jooq.model.tables.Items;
 import com.inai.arna.repository.custom.CustomItemRepository;
 import jakarta.annotation.PostConstruct;
@@ -17,12 +18,14 @@ import org.jooq.impl.DSL;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,23 +34,29 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
     private Items items;
     private Images images;
     private FavoriteItems favoriteItems;
+    private ItemCategories itemCategories;
 
     @PostConstruct
     private void init() {
         items = Tables.ITEMS;
         images = Tables.IMAGES;
         favoriteItems = Tables.FAVORITE_ITEMS;
+        itemCategories = Tables.ITEM_CATEGORIES;
     }
     @Override
-    public Page<ItemResponse> findAll(Integer categoryId, Integer userId, Filter filter, String search, Pageable pageable) {
+    public Page<ItemResponse> findAll(Integer roomId, Integer categoryId, Integer userId, Filter filter,
+                                      String search, Pageable pageable) {
+
         var query = context.select(getSelectColumns()).from(items)
+                .join(itemCategories).on(itemCategories.ID.eq(items.CATEGORY_ID))
                 .leftJoin(favoriteItems).on(
                         userId != null ?
                         favoriteItems.USER_ID.eq(userId).and(favoriteItems.ITEM_ID.eq(items.ID)) :
                         DSL.falseCondition())
                 .join(images).on(
                         images.ITEM_ID.eq(items.ID).and(images.IS_DEFAULT.isTrue()))
-                .where(getConditions(categoryId, filter, search));
+                .where(getConditions(roomId, categoryId, filter, search))
+                .orderBy(getSortFields(pageable.getSort()));
 
         return getPaginatedResult(query, pageable, ItemResponse.class);
     }
@@ -78,36 +87,50 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         );
     }
 
-    private Condition getConditions(Integer categoryId, Filter filter, String search) {
+    private Condition getConditions(Integer roomId, Integer categoryId, Filter filter, String search) {
         Condition condition = DSL.trueCondition();
 
-        if (categoryId != null)
-            condition = getByCategory(categoryId);
-        if (filter != null)
-            condition = getByFilter(condition, filter);
-        if (search != null)
+        if (roomId != null) {
+            if (categoryId != null)
+                condition = getByCategory(roomId, categoryId);
+
+            else if (filter != null)
+                condition = getByFilter(roomId, filter);
+        }
+        else if (search != null)
             condition = getBySearch(search);
 
         return condition;
     }
 
-    private Condition getByCategory(Integer categoryId) {
-        return DSL.trueCondition().and(items.CATEGORY_ID.eq(categoryId));
+    private Condition getByCategory(Integer roomId, Integer categoryId) {
+        return itemCategories.ROOM_ID.eq(roomId).and(itemCategories.CATEGORY_ID.eq(categoryId));
     }
 
-    private Condition getByFilter(Condition previous, Filter filter) {
+    private Condition getByFilter(Integer roomId, Filter filter) {
         LocalDateTime dateLimit = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
-        return previous.and(filter == Filter.NEW ?
-                            items.CREATED_AT.greaterOrEqual(dateLimit) :
-                            items.NUMBER_OF_PURCHASES.greaterOrEqual(20));
+        return itemCategories.ROOM_ID.eq(roomId)
+                .and(filter == Filter.NEW ?
+                        items.CREATED_AT.greaterOrEqual(dateLimit) :
+                        items.NUMBER_OF_PURCHASES.greaterOrEqual(20));
     }
 
     private Condition getBySearch(String search) {
         return DSL.lower(items.NAME).like("%" + search.toLowerCase() + "%")
                 .or(DSL.lower(items.DESCRIPTION).like("%" + search.toLowerCase() + "%"));
     }
+    
+    private List<SortField<?>> getSortFields(Sort sort) {
+        return sort
+                .stream()
+                .map(s -> {
+                    Field<?> field = DSL.field(s.getProperty());
+                    return s.isAscending() ? field.asc() : field.desc();
+                })
+                .collect(Collectors.toList());
+    }
 
-    private <T> Page<T> getPaginatedResult(SelectConditionStep<Record> query, Pageable pageable, Class<T> aClass) {
+    private <T> Page<T> getPaginatedResult(SelectSeekStepN<Record> query, Pageable pageable, Class<T> aClass) {
         var paginatedQuery = query
                 .limit(pageable.getPageSize())
                 .offset(pageable.getPageNumber() * pageable.getPageSize());
