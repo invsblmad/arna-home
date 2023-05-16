@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Image {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
     private String url;
     private String colorHex;
     @Column(name = "is_default")
@@ -19,4 +18,5 @@ public class Image {
     @ManyToOne
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
+
 }

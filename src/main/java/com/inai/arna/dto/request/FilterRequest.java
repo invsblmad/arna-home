@@ -1,6 +1,6 @@
 package com.inai.arna.dto.request;
 
-public enum Filter {
+public enum FilterRequest {
     NEW,
     POPULAR
 }

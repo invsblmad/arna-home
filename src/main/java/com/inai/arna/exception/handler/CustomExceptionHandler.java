@@ -1,5 +1,6 @@
-package com.inai.arna.exception.hadler;
+package com.inai.arna.exception.handler;
 
+import com.inai.arna.exception.CloudStorageError;
 import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.exception.PasswordNotConfirmedException;
 import com.inai.arna.exception.UserAlreadyExistsException;
@@ -53,6 +54,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(NotFoundException e) {
         return ResponseEntity
                 .status(NOT_FOUND)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(CloudStorageError.class)
+    public ResponseEntity<ErrorResponse> handle(CloudStorageError e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
 }

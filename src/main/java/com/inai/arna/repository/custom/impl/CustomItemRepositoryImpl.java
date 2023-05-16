@@ -1,6 +1,6 @@
 package com.inai.arna.repository.custom.impl;
 
-import com.inai.arna.dto.request.Filter;
+import com.inai.arna.dto.request.FilterRequest;
 import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemResponse;
 import com.inai.arna.exception.NotFoundException;
@@ -44,7 +44,7 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         itemCategories = Tables.ITEM_CATEGORIES;
     }
     @Override
-    public Page<ItemResponse> findAll(Integer roomId, Integer categoryId, Integer userId, Filter filter,
+    public Page<ItemResponse> findAll(Integer roomId, Integer categoryId, Integer userId, FilterRequest filter,
                                       String search, Pageable pageable) {
 
         var query = context.select(getSelectColumns()).from(items)
@@ -87,7 +87,7 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         );
     }
 
-    private Condition getConditions(Integer roomId, Integer categoryId, Filter filter, String search) {
+    private Condition getConditions(Integer roomId, Integer categoryId, FilterRequest filter, String search) {
         Condition condition = DSL.trueCondition();
 
         if (roomId != null) {
@@ -107,10 +107,10 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         return itemCategories.ROOM_ID.eq(roomId).and(itemCategories.CATEGORY_ID.eq(categoryId));
     }
 
-    private Condition getByFilter(Integer roomId, Filter filter) {
+    private Condition getByFilter(Integer roomId, FilterRequest filter) {
         LocalDateTime dateLimit = LocalDateTime.now().minus(7, ChronoUnit.DAYS);
         return itemCategories.ROOM_ID.eq(roomId)
-                .and(filter == Filter.NEW ?
+                .and(filter == FilterRequest.NEW ?
                         items.CREATED_AT.greaterOrEqual(dateLimit) :
                         items.NUMBER_OF_PURCHASES.greaterOrEqual(20));
     }
