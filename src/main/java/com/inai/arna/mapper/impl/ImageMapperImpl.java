@@ -1,11 +1,15 @@
 package com.inai.arna.mapper.impl;
 
 import com.inai.arna.dto.request.ImageRequest;
+import com.inai.arna.dto.response.ImageDetailsResponse;
 import com.inai.arna.dto.response.ImageResponse;
 import com.inai.arna.mapper.ImageMapper;
 import com.inai.arna.model.Image;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +24,25 @@ public class ImageMapperImpl implements ImageMapper {
     }
 
     @Override
-    public ImageResponse toDto(Image image) {
-        ImageResponse imageResponse = new ImageResponse();
-        imageResponse.setId(image.getId());
-        imageResponse.setUrl(image.getUrl());
-        imageResponse.setColorHex(image.getColorHex());
-        imageResponse.setDefault(image.isDefault());
-        return imageResponse;
+    public ImageDetailsResponse toDetailsDto(Image image) {
+        return new ImageDetailsResponse(
+                image.getId(),
+                image.getUrl(),
+                image.getColorHex(),
+                image.isDefault()
+        );
+    }
+
+    @Override
+    public List<ImageResponse> toDtoList(List<Image> image) {
+        return image.stream().map(this::toDto).collect(Collectors.toList());
+    }
+
+    private ImageResponse toDto(Image image) {
+        return new ImageResponse(
+                image.getId(),
+                image.getUrl(),
+                image.isDefault()
+        );
     }
 }

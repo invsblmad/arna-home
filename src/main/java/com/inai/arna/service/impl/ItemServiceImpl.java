@@ -2,7 +2,8 @@ package com.inai.arna.service.impl;
 
 import com.inai.arna.dto.request.FilterRequest;
 import com.inai.arna.dto.request.ImageRequest;
-import com.inai.arna.dto.response.ImageResponse;
+import com.inai.arna.dto.response.GroupedImageResponse;
+import com.inai.arna.dto.response.ImageDetailsResponse;
 import com.inai.arna.dto.response.ItemDetailsResponse;
 import com.inai.arna.dto.response.ItemResponse;
 import com.inai.arna.exception.NotFoundException;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Service
@@ -51,9 +54,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ImageResponse saveImage(Integer itemId, MultipartFile file, ImageRequest imageRequest) {
+    public ImageDetailsResponse saveImage(Integer itemId, MultipartFile file, ImageRequest imageRequest) {
         Item item = findItemById(itemId);
         return imageService.save(item, file, imageRequest);
+    }
+
+    @Override
+    public List<GroupedImageResponse> getImagesById(Integer itemId) {
+        Item item = findItemById(itemId);
+        return imageService.getAll(item);
     }
 
     private void findRoomById(Integer id) {

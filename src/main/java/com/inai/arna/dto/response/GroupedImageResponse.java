@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class ImageResponse {
-    private String id;
-    private String url;
-    private boolean isDefault;
+public class GroupedImageResponse {
+    private String colorHex;
+    private List<ImageResponse> images;
 }
