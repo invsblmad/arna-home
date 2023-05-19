@@ -5,14 +5,12 @@ import com.inai.arna.dto.response.ImageDetailsResponse;
 import com.inai.arna.dto.response.ImageResponse;
 import com.inai.arna.mapper.ImageMapper;
 import com.inai.arna.model.Image;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ImageMapperImpl implements ImageMapper {
 
     @Override

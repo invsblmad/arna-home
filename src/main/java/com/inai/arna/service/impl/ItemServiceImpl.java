@@ -2,15 +2,11 @@ package com.inai.arna.service.impl;
 
 import com.inai.arna.dto.request.FilterRequest;
 import com.inai.arna.dto.request.ImageRequest;
-import com.inai.arna.dto.response.GroupedImageResponse;
-import com.inai.arna.dto.response.ImageDetailsResponse;
-import com.inai.arna.dto.response.ItemDetailsResponse;
-import com.inai.arna.dto.response.ItemResponse;
+import com.inai.arna.dto.request.ReviewRequest;
+import com.inai.arna.dto.response.*;
 import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.Item;
-import com.inai.arna.repository.CategoryRepository;
 import com.inai.arna.repository.ItemRepository;
-import com.inai.arna.repository.RoomRepository;
 import com.inai.arna.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,9 +20,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final CategoryRepository categoryRepository;
-    private final RoomRepository roomRepository;
     private final ItemRepository itemRepository;
+    private final CategoryService categoryService;
     private final UserService userService;
     private final ReviewService reviewService;
     private final ImageService imageService;
@@ -35,8 +30,8 @@ public class ItemServiceImpl implements ItemService {
     public Page<ItemResponse> getAll(Integer roomId, Integer categoryId, FilterRequest filter,
                                      String search, Pageable pageable) {
 
-        if (roomId != null) findRoomById(roomId);
-        if (categoryId != null) findCategoryById(categoryId);
+        if (roomId != null) categoryService.findRoomById(roomId);
+        if (categoryId != null) categoryService.findCategoryById(categoryId);
 
         Integer userId = userService.getAuthenticatedUserId();
         return itemRepository.findAll(roomId, categoryId, userId, filter, search, pageable);
@@ -65,16 +60,16 @@ public class ItemServiceImpl implements ItemService {
         return imageService.getAll(item);
     }
 
-    private void findRoomById(Integer id) {
-        roomRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Room with id " + id + " is not found")
-        );
+    @Override
+    public Page<ReviewResponse> getReviewsById(Integer itemId, Pageable pageable) {
+        Item item = findItemById(itemId);
+        return reviewService.getAll(item, pageable);
     }
 
-    private void findCategoryById(Integer id) {
-        categoryRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Category with id " + id + " is not found")
-        );
+    @Override
+    public ReviewResponse saveReview(Integer itemId, ReviewRequest reviewRequest) {
+        Item item = findItemById(itemId);
+        return reviewService.save(item, reviewRequest);
     }
 
     private Item findItemById(Integer id) {

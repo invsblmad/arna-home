@@ -2,10 +2,8 @@ package com.inai.arna.service;
 
 import com.inai.arna.dto.request.FilterRequest;
 import com.inai.arna.dto.request.ImageRequest;
-import com.inai.arna.dto.response.GroupedImageResponse;
-import com.inai.arna.dto.response.ImageDetailsResponse;
-import com.inai.arna.dto.response.ItemDetailsResponse;
-import com.inai.arna.dto.response.ItemResponse;
+import com.inai.arna.dto.request.ReviewRequest;
+import com.inai.arna.dto.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,5 +16,7 @@ public interface ItemService {
     ItemDetailsResponse getById(Integer itemId);
     ImageDetailsResponse saveImage(Integer itemId, MultipartFile file, ImageRequest imageRequest);
     List<GroupedImageResponse> getImagesById(Integer itemId);
+    Page<ReviewResponse> getReviewsById(Integer itemId, Pageable pageable);
+    ReviewResponse saveReview(Integer itemId, ReviewRequest reviewRequest);
 
 }

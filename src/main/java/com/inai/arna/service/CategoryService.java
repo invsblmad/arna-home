@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface CategoryService {
     List<RoomView> getAll();
+    void findRoomById(Integer roomId);
+    void findCategoryById(Integer categoryId);
 }
