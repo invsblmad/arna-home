@@ -1,9 +1,6 @@
 package com.inai.arna.exception.handler;
 
-import com.inai.arna.exception.CloudStorageError;
-import com.inai.arna.exception.NotFoundException;
-import com.inai.arna.exception.PasswordNotConfirmedException;
-import com.inai.arna.exception.UserAlreadyExistsException;
+import com.inai.arna.exception.*;
 import com.inai.arna.exception.response.ErrorResponse;
 import com.inai.arna.exception.response.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -59,6 +56,13 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(CloudStorageError.class)
     public ResponseEntity<ErrorResponse> handle(CloudStorageError e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ItemAlreadyLikedException.class)
+    public ResponseEntity<ErrorResponse> handle(ItemAlreadyLikedException e) {
         return ResponseEntity
                 .status(BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));

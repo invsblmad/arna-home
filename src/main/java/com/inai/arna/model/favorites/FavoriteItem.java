@@ -33,4 +33,9 @@ public class FavoriteItem implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "item_id", insertable = false, updatable = false)
     private Item item;
+
+    public FavoriteItem(Integer userId, Integer itemId) {
+        this.userId = userId;
+        this.itemId = itemId;
+    }
 }

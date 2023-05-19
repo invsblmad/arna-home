@@ -76,6 +76,20 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         return record.into(ItemDetailsResponse.class);
     }
 
+    @Override
+    public Page<ItemResponse> findUserFavorites(Integer userId, String search, Pageable pageable) {
+        var query = context.select(getSelectColumns()).from(items)
+                .leftJoin(favoriteItems).on(
+                        favoriteItems.ITEM_ID.eq(items.ID))
+                .join(images).on(
+                        images.ITEM_ID.eq(items.ID).and(images.IS_DEFAULT.isTrue()))
+                .where(favoriteItems.USER_ID.eq(userId).and(
+                        search != null ? getBySearch(search) : DSL.trueCondition()
+                ));
+
+        return getPaginatedResult(query, pageable, ItemResponse.class);
+    }
+
     private List<Field<?>> getSelectColumns() {
         return Arrays.asList(
                 items.ID,
@@ -141,10 +155,22 @@ public class CustomItemRepositoryImpl implements CustomItemRepository {
         return new PageImpl<>(result, pageable, totalCount);
     }
 
+    private <T> Page<T> getPaginatedResult(SelectConditionStep<Record> query, Pageable pageable, Class<T> aClass) {
+        var paginatedQuery = query
+                .limit(pageable.getPageSize())
+                .offset(pageable.getPageNumber() * pageable.getPageSize());
+
+        List<T> result = paginatedQuery.fetchInto(aClass);
+
+        int totalCount = context.fetchCount(paginatedQuery);
+        return new PageImpl<>(result, pageable, totalCount);
+    }
+
     private List<Field<?>> getItemDetailsColumns() {
         var columns = getSelectColumns();
         columns.set(columns.size() - 1, items.DESCRIPTION);
         return columns;
     }
+
 
 }

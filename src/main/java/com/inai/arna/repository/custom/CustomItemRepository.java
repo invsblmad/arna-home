@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface CustomItemRepository {
     Page<ItemResponse> findAll(Integer roomId, Integer categoryId, Integer userId, FilterRequest filter, String search, Pageable pageable);
     ItemDetailsResponse findById(Integer itemId, Integer userId);
+    Page<ItemResponse> findUserFavorites(Integer userId, String search, Pageable pageable);
 
 }

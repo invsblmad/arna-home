@@ -18,5 +18,8 @@ public interface ItemService {
     List<GroupedImageResponse> getImagesById(Integer itemId);
     Page<ReviewResponse> getReviewsById(Integer itemId, Pageable pageable);
     ReviewResponse saveReview(Integer itemId, ReviewRequest reviewRequest);
+    Page<ItemResponse> getUserFavorites(String search, Pageable pageable);
+    void saveToFavorites(Integer itemId);
+    void deleteFromFavorites(Integer itemId);
 
 }

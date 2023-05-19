@@ -4,8 +4,11 @@ import com.inai.arna.dto.request.FilterRequest;
 import com.inai.arna.dto.request.ImageRequest;
 import com.inai.arna.dto.request.ReviewRequest;
 import com.inai.arna.dto.response.*;
+import com.inai.arna.exception.ItemAlreadyLikedException;
 import com.inai.arna.exception.NotFoundException;
 import com.inai.arna.model.Item;
+import com.inai.arna.model.favorites.FavoriteItem;
+import com.inai.arna.repository.FavoriteItemRepository;
 import com.inai.arna.repository.ItemRepository;
 import com.inai.arna.service.*;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
+    private final FavoriteItemRepository favoriteItemRepository;
     private final CategoryService categoryService;
     private final UserService userService;
     private final ReviewService reviewService;
@@ -72,13 +76,40 @@ public class ItemServiceImpl implements ItemService {
         return reviewService.save(item, reviewRequest);
     }
 
+    @Override
+    public Page<ItemResponse> getUserFavorites(String search, Pageable pageable) {
+        Integer userId = userService.getAuthenticatedUserId();
+        return itemRepository.findUserFavorites(userId, search, pageable);
+    }
+
+    @Override
+    public void saveToFavorites(Integer itemId) {
+        Item item = findItemById(itemId);
+        Integer userId = userService.getAuthenticatedUserId();
+
+        checkIfItemAlreadyLiked(userId, itemId);
+        favoriteItemRepository.save(new FavoriteItem(userId, itemId));
+    }
+
+    @Override
+    public void deleteFromFavorites(Integer itemId) {
+        Item item = findItemById(itemId);
+        Integer userId = userService.getAuthenticatedUserId();
+
+        var favoriteItem = favoriteItemRepository.findByUserIdAndItemId(userId, itemId);
+        favoriteItem.ifPresent(favoriteItemRepository::delete);
+    }
+
     private Item findItemById(Integer id) {
         return itemRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Item with id " + id + " is not found")
         );
     }
 
-
+    private void checkIfItemAlreadyLiked(Integer userId, Integer itemId) {
+        if (favoriteItemRepository.findByUserIdAndItemId(userId, itemId).isPresent())
+            throw new ItemAlreadyLikedException("Item with id " + itemId + " has already been liked");
+    }
 
 
 }

@@ -43,8 +43,8 @@ public class ItemController {
 
     @PostMapping("/protected/items/{item-id}/images")
     public ResponseEntity<ImageDetailsResponse> saveImage(@PathVariable("item-id") Integer itemId,
-                                                         @RequestPart("image") MultipartFile file,
-                                                         @RequestPart("json") ImageRequest imageRequest
+                                                          @RequestPart("image") MultipartFile file,
+                                                          @RequestPart("json") ImageRequest imageRequest
     ) {
         var response = itemService.saveImage(itemId, file, imageRequest);
         return ResponseEntity
@@ -53,18 +53,34 @@ public class ItemController {
 
     @GetMapping("/public/items/{item-id}/reviews")
     public Page<ReviewResponse> getReviewsById(@PathVariable("item-id") Integer itemId,
-                                           Pageable pageable
+                                               Pageable pageable
     ) {
         return itemService.getReviewsById(itemId, pageable);
     }
 
     @PostMapping("/protected/items/{item-id}/reviews")
     public ResponseEntity<ReviewResponse> saveReview(@PathVariable("item-id") Integer itemId,
-                                 @RequestBody ReviewRequest reviewRequest
+                                                     @RequestBody ReviewRequest reviewRequest
     ) {
         var response = itemService.saveReview(itemId, reviewRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/protected/items/favorites")
+    public Page<ItemResponse> getUserFavorites(@RequestParam(required = false) String search,
+                                               Pageable pageable) {
+        return itemService.getUserFavorites(search, pageable);
+    }
+
+    @PostMapping("/protected/items/{item-id}/favorites")
+    public void saveToFavorites(@PathVariable("item-id") Integer itemId) {
+        itemService.saveToFavorites(itemId);
+    }
+
+    @DeleteMapping("/protected/items/{item-id}/favorites")
+    public void deleteFromFavorites(@PathVariable("item-id") Integer itemId) {
+        itemService.deleteFromFavorites(itemId);
     }
 
 
