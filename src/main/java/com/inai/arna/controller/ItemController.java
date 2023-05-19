@@ -8,6 +8,8 @@ import com.inai.arna.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,11 +42,13 @@ public class ItemController {
     }
 
     @PostMapping("/protected/items/{item-id}/images")
-    public ImageDetailsResponse saveImage(@PathVariable("item-id") Integer itemId,
-                                          @RequestPart("image") MultipartFile file,
-                                          @RequestPart("json") ImageRequest imageRequest
+    public ResponseEntity<ImageDetailsResponse> saveImage(@PathVariable("item-id") Integer itemId,
+                                                         @RequestPart("image") MultipartFile file,
+                                                         @RequestPart("json") ImageRequest imageRequest
     ) {
-        return itemService.saveImage(itemId, file, imageRequest);
+        var response = itemService.saveImage(itemId, file, imageRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/public/items/{item-id}/reviews")
@@ -55,10 +59,13 @@ public class ItemController {
     }
 
     @PostMapping("/protected/items/{item-id}/reviews")
-    public ReviewResponse saveReview(@PathVariable("item-id") Integer itemId,
+    public ResponseEntity<ReviewResponse> saveReview(@PathVariable("item-id") Integer itemId,
                                  @RequestBody ReviewRequest reviewRequest
     ) {
-        return itemService.saveReview(itemId, reviewRequest);
+        var response = itemService.saveReview(itemId, reviewRequest);
+        return ResponseEntity
+                .status(HttpStatus.CREATED).body(response);
     }
+
 
 }
