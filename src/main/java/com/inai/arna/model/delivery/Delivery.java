@@ -16,8 +16,9 @@ public class Delivery {
     private int id;
     @Enumerated(EnumType.STRING)
     private DeliveryType type;
-    private int days;
+    private String time;
     private BigDecimal price;
-    @Column(name = "company_name")
-    private String companyName;
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private DeliveryCompany company;
 }
