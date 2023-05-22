@@ -67,4 +67,18 @@ public class CustomExceptionHandler {
                 .status(BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
+
+    @ExceptionHandler(CreditCardExpiredException.class)
+    public ResponseEntity<ErrorResponse> handle(CreditCardExpiredException e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(CreditCardNotValidException.class)
+    public ResponseEntity<ErrorResponse> handle(CreditCardNotValidException e) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(new ErrorResponse(e.getMessage()));
+    }
 }

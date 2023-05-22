@@ -23,6 +23,8 @@ public class CreditCard {
     private String lastName;
     @Column(name = "expiry_date")
     private LocalDate expiryDate;
+    @Column(name = "is_default")
+    private boolean isDefault;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
